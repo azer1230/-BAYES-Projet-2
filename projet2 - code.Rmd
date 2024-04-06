@@ -1,0 +1,22 @@
+---
+title: "Dugongs - non linear growth curve"
+author: IDRISSI Karim, KOUTIT Abdellah , MOURDI Elias, SELAMNIA Najib
+output: pdf_document
+date: "15/04/2024"
+---
+
+# Importations préliminaires
+```{r}
+# mettre ce qui nous sert pour la suite
+```
+
+# Implémentation algorithmique de notre MCMC
+```{r}
+
+```
+
+# Récupération des résultats
+```{r}
+
+```
+
