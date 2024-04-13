@@ -1,7 +1,32 @@
 \documentclass{rapportECN}
 \usepackage{lipsum}
+\usepackage{listings}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]
 \title{Rapport CentraleNantes - Template} %Thanks for Rapport CentraleSupelec - Template, By Axel Poupart-Lafarge
 \begin{document}
+
+
+\lstset{
+    language=Python,
+    basicstyle=\small\ttfamily,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!40!black},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    columns=fullflexible,
+    morekeywords={def, return, np, pd, KNNImputer},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}
+}
 
 %----------- Informations du rapport ---------
 
@@ -43,6 +68,68 @@
 
 
 %------------ Introduction ----------------
+
+\hspace{10}
+\section*{Présentation des données}
+
+Les informations du sujet sont données sous la forme suivante: 
+
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+Dugongs & 1 & 2 & 3 & 4 & 5 & .... & 26 & 27 \\
+\hline
+Âge (X) & 1.0 & 1.5 & 1.5 & 1.5 & 2.5 & .... & 29.0 & 31.5 \\
+\hline
+
+Taille (Y) & 1.80 & 1.85  & 1.87 & 1.77 & 2.02 & .... & 2.27 & 2.57 \\
+\hline
+\end{tabular}
+\end{center}
+
+La première entrée X indique l'âge des 27 dugongs, tandis que l'entrée Y représente leur taille. L'objectif du projet est de créer un modèle bayésien afin d'estimer la taille des dugongs en fonction de leur âge.
+
+On peut afficher le graphique suivant : 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{Graphique_évolutif.png}
+\caption{Evolution de la longueur des Dugongs en fonction de leur âge.}
+
+On constante que la taille des dugongs ne suit pas une tendance linéaire et converge vers une valeur constante. Par conséquent, dans le but de décrire la relation entre l'âge (X) et la taille Y nous allons considérer un modèle non linéaire, le modèle de régression asymptotique qui nous semble approprié à l'étude.
+
+Remarque : D'autres modèles similaires de croissance sont disponibles dans la littérature comme le modèle logistique (von Bertalanffy, 1957) ou le modèle de Gompertz (Richards, 1959)
+
+L'analyse non paramétrique de la distribution de Y (voir Figure 2) suggère que cette distribution peut être décrite comme la combinaison de plusieurs distributions normales. Cela nous a conduit à choisir le modèle suivant :
+
+$$Y_i \sim \mathcal{N}(\mu_i, \tau) \text{ pour } i = 1, \dots, 27$$
+
+$$\mu_i = \alpha - \beta \gamma^X \text{ avec } \alpha, \beta > 0 \text{ et } 0 < \gamma < 1$$
+
+Ainsi, lorsque l'âge est important , la moyenne $\mu_i$ reste pratiquement inchangée, car $\gamma$ est inférieur à 1. On a l'effet recherché puisque les dugongs les  plus âgés ont une taille semblable d'environ 2,5 mètres, c'est à dire qu'on a convergence vers une taille particulière, là où les plus jeunes voient leur taille de plus en plus importantes avec l'âge.
+
+\section*{Modèle mathématique}
+
+Nous allons alors calculer les différentes lois à posteriori pour les différents paramètres qui seront utilisées dans notre algorithme MCMC. Les lois a priori fournies dans le Tableau 1 et le modèle DAG seront employés.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Paramètres & $\alpha$ & $\beta$ & $\tau$ & $\gamma$ \\
+\hline
+Lois a priori & $N(0, 10^3)$ & $N(0, 10^3)$ & $\Gamma(10^{-3}, 10^{-3})$ & Uniform(0.5, 1) \\
+\hline
+\end{tabular}
+\caption{Lois à priori pour nos paramètres}
+\end{table}
+
+Les variables $\alpha$, $\beta$, $\tau$ et γ doivent être strictement positives, et γ doit être compris entre 0 et 1. Nous utiliserons l'algoritme de Metropolis-Hastings avec une marche aléatoire log-normale et une loi de proposition gaussienne N(0, $\sigma_{prop}^2).
+
+De plus, pour $\gamma$, on considère que la valeur proposée doit être inférieure à 1 pour être acceptée.
+
+\section*{Lois à posteriori}
 
 
 \end{document}
